@@ -22,7 +22,6 @@ public class Wordle {
             if (!respuesta.equals("0")) {
 
                 String palabra = menu();                //Método que devuelve una palabra con la longitud elegida por el usuario
-                String copia = palabra;
 
                 String palabraUsuario;
 
