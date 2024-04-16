@@ -1,10 +1,10 @@
-#Wordle Java Game
-##Welcome to the Wordle Java Game repository!
+<h1>Wordle Java Game</h1>
+<h2>Welcome to the Wordle Java Game repository!</h2>
 
-###Overview
+<h3>Overview</h3>
 This repository hosts a Java implementation of the popular word puzzle game Wordle. In this game, players have to guess a secret five-letter word within a limited number of attempts. The game provides feedback on each guess, indicating which letters are correct and in the right position, which letters are correct but in the wrong position, and which letters are not present in the word at all.
 
-###Features
+<h3>Features</h3>
 User-Friendly Interface: The game features a simple and intuitive interface, making it easy for players to interact and enjoy the game.
 Customizable Difficulty: Players can adjust the difficulty level by changing the length of the secret word or the number of attempts allowed.
 Word Validation: The game validates user input to ensure that only valid words are accepted as guesses.
@@ -19,8 +19,8 @@ Run the Game: Execute the compiled Java program to start playing the game.
 Contributing
 Contributions to the Wordle Java Game project are welcome! If you have any ideas for improvements or would like to report a bug, please open an issue or submit a pull request.
 
-###License
+<h3>License</h3>
 This project is licensed under the MIT License.
 
-###Acknowledgements
+<h3>Acknowledgements</h3>
 Special thanks to the creators of the original Wordle game for inspiring this project.
