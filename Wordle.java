@@ -1,7 +1,6 @@
 //Juego del WORDLE
 package WORDLE;
 
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Wordle {
@@ -13,34 +12,22 @@ public class Wordle {
         String respuesta;
 
         do {
-            int intentos = 6;
 
             cartelJuego(); //Cartel para Jugar o No Jugar
 
             respuesta = rojo.next();
 
             if (!respuesta.equals("0")) {
-
                 String palabra = menu();                //Método que devuelve una palabra con la longitud elegida por el usuario
 
                 String palabraUsuario;
 
-                System.out.println("\n                                                                                   " + intentos + " INTENTOS\n");
-
                 plantillas(palabra);
 
-                String[] colores;
-                String[] verdes;
-
                 do {
-                    //Array donde se guardan en forma de texto los colores correspondientes
-                    colores = new String[palabra.length()];
-                    //Array donde se guardan en todas las posiciones el verde por si no acierta la Palabra
-                    verdes = new String[palabra.length()];
-                    Arrays.fill(verdes, "verde");
+                    String[] colores = new String[palabra.length()];
 
-
-                    for(int i = 0; i < colores.length; i++) { //RELLENA EL Arrays con " " para evitar que se rellene con 'null'
+                    for(int i = 0; i < colores.length; i++) { //rELLENA EL Arrays con " " para evitar que se rellene con 'null'
                         colores[i] = " ";
                     }
 
@@ -51,20 +38,9 @@ public class Wordle {
 
                     palabraUsuario = conviertePalabra(pusuario);
 
-                    if (!palabraUsuario.equals(palabra))
-                        intentos--;
+                } while (!palabraUsuario.equals(palabra));
 
-                } while (!palabraUsuario.equals(palabra) && intentos != 0);
-
-                if (palabraUsuario.equals(palabra))
-                    System.out.println("                                                                                  ¡ENHORABUENA!");
-                else {
-                    System.out.println( "                                                                                  FIN DEL JUEGO\n\n" +
-                                        "                                                                                 LA PALABRA ERA:\n\n");
-
-                    char[] solucion = palabra.toCharArray();
-                    pintaCuadrados(solucion, verdes);
-                }
+                System.out.println("                                                                                  ¡ENHORABUENA!");
             }
 
         } while (!respuesta.equals("0"));
