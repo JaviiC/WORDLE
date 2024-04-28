@@ -2,10 +2,10 @@
 package WORDLE;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.FileWriter;
+import java.util.*;
 
 public class Wordle {
 
@@ -14,18 +14,20 @@ public class Wordle {
     public static final String PALABRAS = "C:\\Users\\Javi\\IdeaProjects\\PROYECTOS\\src\\WORDLE\\palabras.txt";
     public static final String RANKING = "C:\\Users\\Javi\\IdeaProjects\\PROYECTOS\\src\\WORDLE\\ranking.txt";
 
-    public static ArrayList<String> fichPalabras = cargaFichero(PALABRAS);
-    public static ArrayList<String> fichRanking = cargaFichero(RANKING);
+    public static LinkedList<String> fichPalabras = cargaFichero(PALABRAS);
+    public static LinkedList<String> fichRanking = cargaFichero(RANKING);
 
     public static final int INTENTOS = 8;
     public static final int MULTIPLICADOR = 3;
+    public static final int JUGADORES_EN_RANKING = 5;
 //______________________________________________________________________________________________________________________MAIN
     public static void main(String[] args) {
 
         String respuesta, palabraUsuario, palabra, nombre;
+        int intentos, puntos;
 
         do {
-            int intentos = INTENTOS; //Intentos para acertar la palabra
+            intentos = INTENTOS; //Intentos para acertar la palabra
 
             cartelJuego(); //Cartel para Jugar o No Jugar
 
@@ -72,17 +74,84 @@ public class Wordle {
                 else {
                     System.out.println( "                                                                                  FIN DEL JUEGO\n\n" +
                                         "                                                                                 LA PALABRA ERA:\n\n");
+                    //Se tranforma la palabra a un array de tipo char
                     char[] solucion = palabra.toCharArray();
                     pintaCuadrados(solucion, verdes);
                 }
+                //Se registran los puntos según los intentos y palabra empleados
+                puntos = sumaPuntos(intentos, palabra);
+                //Se actualiza el ranking con el NUEVO JUGADOR
+                actualizaRanking(puntos, nombre, palabra);
             }
+
+            muestraRanking();
+
+            vuelcaFichero();
 
         } while (!respuesta.equals("0"));
 
         findeJuego();
     }
+//______________________________________________________________________________________________________________________MOSTRAR RANKING
+    public static void muestraRanking(){
+        //Bucle para mostrar el Ranking
+        for (int i = 0; i < fichRanking.size(); i++) {
+            System.out.println(fichRanking.get(i));
+        }
+    }
+//______________________________________________________________________________________________________________________REGISTRA PUNTUACIÓN / ACTUALIZA RANKING
+    public static void actualizaRanking(Integer puntos, String nombre, String palabra){
+
+        //Lista que guarda solo el apartado de ranking específico
+        LinkedList<String> ranking = new LinkedList<>();
+
+        String nuevoJugador = puntos.toString() + "-" + nombre;
+        int posicionRanking = 0, i, j;
+        boolean letras = false;
+
+        //Bucle que recorre la lista con el fichero cargado del ranking y no se han encontrado las letras
+        for (i = 0; i < fichRanking.size() && !letras; i++) {
+
+            //Si la linea del fichero del ranking contiene el número de la longitud de la palabra:
+            if (fichRanking.get(i).contains(Integer.toString(palabra.length()))) {
+
+                posicionRanking = i+1;
+                letras = true;
+                //Bucle que recorre las lineas del fichero de los concursantes específicos
+                for (j = i+1; j < JUGADORES_EN_RANKING; j++) {
+                    //Se añade a la lista de ranking las 5 lineas guardadas del fichero del apartado correspondiente
+                    ranking.add(fichRanking.get(j));
+                }
+                //Se añade la puntuación actual y el nombre del jugador
+                ranking.add(nuevoJugador);
+            }
+
+        }
+        //Se reordena el ranking en base a los puntos
+        Collections.sort(ranking, new ComparaPuntos());
+        //Se elimina la puntuación más baja
+        String eliminado = ranking.removeLast();
+
+        //Si el nuevo jugador y el jugador eliminado del ranking NO SON EL MISMO, se actualiza ------------
+        if (!nuevoJugador.equals(eliminado))
+            //Se actualiza la lista
+            insertaEnRanking(posicionRanking, ranking);
+
+    }
+//______________________________________________________________________________________________________________________INSERTA EN EL RANKING
+    private static void insertaEnRanking(int posicionRanking, LinkedList<String> ranking) {
+
+        int pos = 0;
+        //Bucle para actualizar la lista del ranking en los valores específicos
+        for (int i = posicionRanking; i < JUGADORES_EN_RANKING; i++) {
+            fichRanking.set(i, ranking.get(pos));
+            pos++;
+        }
+        System.out.println("\n¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !");
+    }
 //______________________________________________________________________________________________________________________SUMA PUNTOS
     public static int sumaPuntos(int intentos, String palabra){
+        //Variable 'puntos' = case de los intentos
         int puntos = switch (intentos) {
             case 8 -> 1000;
             case 7 -> 800;
@@ -97,9 +166,9 @@ public class Wordle {
         return puntos * palabra.length() * MULTIPLICADOR;
     }
 //______________________________________________________________________________________________________________________CARGA FICHERO
-    public static ArrayList<String> cargaFichero(String NUEVOFICHERO){
+    public static LinkedList<String> cargaFichero(String NUEVOFICHERO){
 
-        ArrayList<String> fichero = new ArrayList<>();
+        LinkedList<String> fichero = new LinkedList<>();
 
         try (BufferedReader in = new BufferedReader(new FileReader(NUEVOFICHERO))) {
             //Le cargan todas las lineas del fichero en el arraylistcon formato de string
@@ -113,6 +182,21 @@ public class Wordle {
         }
         return fichero;
     }
+//______________________________________________________________________________________________________________________VUELCA FICHERO
+    public static void vuelcaFichero(){
+
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(RANKING))) {
+            //Bucle que recorre la lista con las lineas de texto y las escribe en el fichero RANKING
+            for (int i = 0; i < fichRanking.size(); i++) {
+                String linea = fichRanking.get(i);
+                out.write(linea);
+                out.newLine();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
+    }    
 //______________________________________________________________________________________________________________________CARTEL DE JUEGO
     static void cartelJuego(){
         System.out.println( "\n                                                              " + "\033[46m" + "                                                      " + "\033[0m" +
@@ -130,9 +214,8 @@ public class Wordle {
     static String menuPalabras(){
 
         int letras;
-        String cadena = "";
 
-        cadena +=   "\n__________________________________________________________________________________________________________________________________________________________________________________________________\n" +
+        String cadena =   "\n__________________________________________________________________________________________________________________________________________________________________________________________________\n" +
                 "\n      "+"\033[45m"+"                                                                                                                                                                    "+"\033[0m"+
                 "\n      "+"\033[45m"+"\033[1;30m"+"                                                                           W  O  R  D  L  E                                                                         "+"\033[0m"+
                 "\n      "+"\033[45m"+"\033[1;30m"+"                                                                                                                                                               J.C  "+"\033[0m"+
