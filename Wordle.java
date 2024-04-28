@@ -38,7 +38,7 @@ public class Wordle {
                 Scanner rojo = new Scanner(System.in);
 
                 System.out.print("                                                                          INTRODUCE TU NOMBRE: ");
-                nombre = rojo.nextLine();
+                nombre = rojo.next();
                 //Método que devuelve una palabra con la longitud elegida por el usuario
                 palabra = menuPalabras();
 
@@ -81,12 +81,15 @@ public class Wordle {
                 //Se registran los puntos según los intentos y palabra empleados
                 puntos = sumaPuntos(intentos, palabra);
                 //Se actualiza el ranking con el NUEVO JUGADOR
+
+                System.out.println(puntos);
+
                 actualizaRanking(puntos, nombre, palabra);
             }
-
-            muestraRanking();
-
+            //Se vuelcan los datos de la lista al fichero ranking.txt
             vuelcaFichero();
+            //Muestra el Ranking de Jugadores
+            muestraRanking();
 
         } while (!respuesta.equals("0"));
 
@@ -106,19 +109,20 @@ public class Wordle {
         LinkedList<String> ranking = new LinkedList<>();
 
         String nuevoJugador = puntos.toString() + "-" + nombre;
-        int posicionRanking = 0, i, j;
+        int posicionRanking = 0, i, j, pos;
         boolean letras = false;
 
         //Bucle que recorre la lista con el fichero cargado del ranking y no se han encontrado las letras
         for (i = 0; i < fichRanking.size() && !letras; i++) {
 
-            //Si la linea del fichero del ranking contiene el número de la longitud de la palabra:
-            if (fichRanking.get(i).contains(Integer.toString(palabra.length()))) {
+            //Si la linea del fichero del ranking es igual al formato de titulo de nº de letras de la palabra (x LETRAS):
+            if (fichRanking.get(i).equalsIgnoreCase(formatoLETRAS(palabra))) {// x LETRAS
 
                 posicionRanking = i+1;
                 letras = true;
+
                 //Bucle que recorre las lineas del fichero de los concursantes específicos
-                for (j = i+1; j < JUGADORES_EN_RANKING; j++) {
+                for (j = posicionRanking; j < posicionRanking + JUGADORES_EN_RANKING; j++) {
                     //Se añade a la lista de ranking las 5 lineas guardadas del fichero del apartado correspondiente
                     ranking.add(fichRanking.get(j));
                 }
@@ -141,13 +145,19 @@ public class Wordle {
 //______________________________________________________________________________________________________________________INSERTA EN EL RANKING
     private static void insertaEnRanking(int posicionRanking, LinkedList<String> ranking) {
 
-        int pos = 0;
-        //Bucle para actualizar la lista del ranking en los valores específicos
-        for (int i = posicionRanking; i < JUGADORES_EN_RANKING; i++) {
-            fichRanking.set(i, ranking.get(pos));
-            pos++;
+        int n = 0;
+        //Bucle que se ejecuta JUGADORES_EN_RANKING veces (5),
+        //Se sustituyen los valores originales del fichero por los valores especificos del ranking
+        while (n < JUGADORES_EN_RANKING) {
+            fichRanking.set(posicionRanking, ranking.get(n));
+            posicionRanking++;
+            n++;
         }
         System.out.println("\n¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !");
+    }
+//______________________________________________________________________________________________________________________FORMATO
+    private static String formatoLETRAS(String palabra){
+        return palabra.length() + " LETRAS";
     }
 //______________________________________________________________________________________________________________________SUMA PUNTOS
     public static int sumaPuntos(int intentos, String palabra){
