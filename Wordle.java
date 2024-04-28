@@ -13,7 +13,7 @@ public class Wordle {
 
     public static final String PALABRAS = "C:\\Users\\Javi\\IdeaProjects\\PROYECTOS\\src\\WORDLE\\palabras.txt";
     public static final String RANKING = "C:\\Users\\Javi\\IdeaProjects\\PROYECTOS\\src\\WORDLE\\ranking.txt";
-
+    //CARGA DE FICHEROS
     public static LinkedList<String> fichPalabras = cargaFichero(PALABRAS);
     public static LinkedList<String> fichRanking = cargaFichero(RANKING);
 
@@ -97,10 +97,25 @@ public class Wordle {
     }
 //______________________________________________________________________________________________________________________MOSTRAR RANKING
     public static void muestraRanking(){
+
+        String cadena = "";
+        int linea = 0;
         //Bucle para mostrar el Ranking
-        for (int i = 0; i < fichRanking.size(); i++) {
-            System.out.println(fichRanking.get(i));
+        for (String s : fichRanking) {
+            //Si la linea es uno titulo (JER = 5, cada 6 lineas hay un titulo):
+            if (linea % (JUGADORES_EN_RANKING+1) == 0) {
+                //Fondo blanco para el titulo
+                cadena += "                                                                                  \033[44m  " + s + "  \033[0m";
+            //Si la linea no es un titulo
+            } else {
+                //info[1]nombre, info[0]puntos
+                String[] info = s.split("-");
+                cadena += "                                                                                 " + info[1] + " - " + info[0] + " pts";
+            }
+            cadena += "\n\n";
+            linea++;
         }
+        System.out.println(cadena);
     }
 //______________________________________________________________________________________________________________________REGISTRA PUNTUACIÓN / ACTUALIZA RANKING
     public static void actualizaRanking(Integer puntos, String nombre, String palabra){
@@ -153,7 +168,7 @@ public class Wordle {
             posicionRanking++;
             n++;
         }
-        System.out.println("\n¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !");
+        System.out.println("\n\n                                                                        ¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !\n\n\n");
     }
 //______________________________________________________________________________________________________________________FORMATO
     private static String formatoLETRAS(String palabra){
