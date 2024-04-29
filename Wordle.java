@@ -21,7 +21,7 @@ public class Wordle {
     public static final int MULTIPLICADOR = 3;
     public static final int JUGADORES_EN_RANKING = 5;
 //______________________________________________________________________________________________________________________MAIN
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException{
 
         String respuesta, palabraUsuario, palabra, nombre;
         int intentos, puntos;
@@ -82,40 +82,47 @@ public class Wordle {
                 puntos = sumaPuntos(intentos, palabra);
                 //Se actualiza el ranking con el NUEVO JUGADOR
 
-                System.out.println(puntos);
+                System.out.println("                                                                              PUNTOS TOTALES: " + puntos + "pts");
 
                 actualizaRanking(puntos, nombre, palabra);
             }
             //Se vuelcan los datos de la lista al fichero ranking.txt
             vuelcaFichero();
-            //Muestra el Ranking de Jugadores
-            muestraRanking();
+            //Si la respuesta es distinta de 0:
+            if (!respuesta.equals("0"))
+                //Muestra el Ranking de Jugadores
+                muestraRanking();
 
         } while (!respuesta.equals("0"));
 
         findeJuego();
     }
 //______________________________________________________________________________________________________________________MOSTRAR RANKING
-    public static void muestraRanking(){
+    public static void muestraRanking() throws InterruptedException{
 
-        String cadena = "";
-        int linea = 0;
+        System.out.print("__________________________________________________________________________________________________________________________________________________________________________________________________\n\n");
+        int linea = 0, posicion = 0;
         //Bucle para mostrar el Ranking
         for (String s : fichRanking) {
-            //Si la linea es uno titulo (JER = 5, cada 6 lineas hay un titulo):
+            //Si la línea es uno título (JER = 5, cada 6 líneas hay un título):
             if (linea % (JUGADORES_EN_RANKING+1) == 0) {
-                //Fondo blanco para el titulo
-                cadena += "                                                                                  \033[44m  " + s + "  \033[0m";
+
+                Thread.sleep(1800);
+
+                //Fondo blanco para el título
+                System.out.print("                                                                                  \033[44m  " + s + "  \033[0m");
+                posicion = 0;
             //Si la linea no es un titulo
             } else {
-                //info[1]nombre, info[0]puntos
+                posicion++;
+                //posición 1-5, info[1]nombre, info[0]puntos
                 String[] info = s.split("-");
-                cadena += "                                                                                 " + info[1] + " - " + info[0] + " pts";
+                System.out.print("                                                                                \033[33m" + posicion + "º\033[0m " + info[1] + " - " + info[0] + " pts");
             }
-            cadena += "\n\n";
+            System.out.print("\n\n");
             linea++;
         }
-        System.out.println(cadena);
+
     }
 //______________________________________________________________________________________________________________________REGISTRA PUNTUACIÓN / ACTUALIZA RANKING
     public static void actualizaRanking(Integer puntos, String nombre, String palabra){
@@ -168,7 +175,7 @@ public class Wordle {
             posicionRanking++;
             n++;
         }
-        System.out.println("\n\n                                                                        ¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !\n\n\n");
+        System.out.println("\n\n                                                                        ¡ ¡ ¡ ENTRASTE EN EL RANKING ! ! !\n\n");
     }
 //______________________________________________________________________________________________________________________FORMATO
     private static String formatoLETRAS(String palabra){
